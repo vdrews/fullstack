@@ -53,3 +53,15 @@ def get_students():
         })
 
     return jsonify(students)
+
+
+
+@app.route('/debug', methods=['GET'])
+def debug():
+    return jsonify({
+        "host": os.environ.get("DB_HOST"),
+        "port": os.environ.get("DB_PORT"),
+        "user": os.environ.get("DB_USER"),
+        "db": os.environ.get("DB_NAME"),
+        "password_set": bool(os.environ.get("DB_PASSWORD"))
+    })
