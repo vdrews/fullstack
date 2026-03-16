@@ -5,13 +5,16 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-db = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="HYEeo091/&$",
-    database="demo_app"
-)
+import os
 
+
+db = mysql.connector.connect(
+    host=os.environ.get("mysql.railway.internal"),
+    port=int(os.environ.get("3306", 3306)),
+    user=os.environ.get("root"),
+    password=os.environ.get("axqVSWVLvSjIejhlSuIgIRYsGDCZgNGZ"),
+    database=os.environ.get("demo_app")
+)
 cursor = db.cursor()
 
 @app.route('/', methods=['GET'])
