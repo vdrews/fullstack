@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Manager</title>
+</head>
+<body>
+
+<h2>Add Student</h2>
+<input id="name" placeholder="Name">
+<input id="email" placeholder="Email">
+<button type="button" onclick="addStudent()">Add Student</button>
+
+<h2>All Students</h2>
+<button type="button" onclick="loadStudents()">Load Students</button>
+
+<ul id="student-list"></ul>
+
+<script>
+  const backendUrl = "http://localhost:5000";
+
+  // Add a student
+  function addStudent() {
+    const name = document.getElementById("name").value;
+    const email = document.getElementById("email").value;
+
+    fetch(`${backendUrl}/add-student`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email })
+    })
+    .then(res => res.json())
+    .then(data => {
+      alert(data.message);
+      document.getElementById("name").value = "";
+      document.getElementById("email").value = "";
+      loadStudents(); // auto-refresh list
+    })
+    .catch(err => console.error(err));
+  }
+
+  // Load all students
+  function loadStudents() {
+    fetch(`${backendUrl}/students`)
+    .then(res => res.json())
+    .then(data => {
+      const list = document.getElementById("student-list");
+      list.innerHTML = "";
+      data.forEach(student => {
+        const li = document.createElement("li");
+        li.innerText = `${student.name} - ${student.email}`;
+        list.appendChild(li);
+      });
+    })
+    .catch(err => console.error(err));
+  }
+
+  // Load students on page load
+  window.onload = loadStudents;
+</script>
+
+</body>
+</html>
