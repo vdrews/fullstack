@@ -6,14 +6,14 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-db = mysql.connector.connect(
-    host=os.environ.get("DB_HOST"),
-    port=int(os.environ.get("DB_PORT", 3306)),
-    user=os.environ.get("DB_USER"),
-    password=os.environ.get("DB_PASSWORD"),
-    database=os.environ.get("DB_NAME")
-)
-cursor = db.cursor()
+def get_db():
+    return mysql.connector.connect(
+        host=os.environ.get("DB_HOST"),
+        port=int(os.environ.get("DB_PORT", 3306)),
+        user=os.environ.get("DB_USER"),
+        password=os.environ.get("DB_PASSWORD"),
+        database=os.environ.get("DB_NAME")
+    )
 
 @app.route('/', methods=['GET'])
 def home():
@@ -25,16 +25,24 @@ def add_student():
     name = data['name']
     email = data['email']
 
+    db = get_db()
+    cursor = db.cursor()
     sql = "INSERT INTO students (name, email) VALUES (%s,%s)"
     cursor.execute(sql, (name, email))
     db.commit()
+    cursor.close()
+    db.close()
 
     return jsonify({"message": "Student added"})
 
 @app.route('/students', methods=['GET'])
 def get_students():
+    db = get_db()
+    cursor = db.cursor()
     cursor.execute("SELECT * FROM students")
     result = cursor.fetchall()
+    cursor.close()
+    db.close()
 
     students = []
     for row in result:
